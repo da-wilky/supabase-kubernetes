@@ -68,6 +68,29 @@ spec:
             key: 16-custom.sql
   {{- end }}
 
+  {{- if .Values.db.enableLegacy }}
+  bootstrap:
+    initdb:
+      database: {{ .Values.secret.db.replica_target_database }}
+      owner: {{ .Values.secret.db.username }}
+      secret:
+        name: {{ .Release.Name }}-db-supabase-admin
+
+      postInitApplicationSQLRefs:
+        configMapRefs:
+          - name: {{ include "supabase.initdb.configmap" . }}-legacy
+            key: 20-rtls_schema_2026_05_01.sql
+
+  externalClusters:
+  - name: legacy-cluster
+    connectionParameters:
+      host: {{ include "supabase.db.legacyHost" . }}
+      user: {{ .Values.db.legacy.secret.db.username }}
+      password: {{ .Values.db.legacy.secret.db.password }}
+      dbname: {{ .Values.db.legacy.secret.db.database }}
+      sslmode: disable
+  {{- end }}
+
   # Storage Configuration
   storage:
     size: {{ .Values.db.persistence.size | default "8Gi" }}
