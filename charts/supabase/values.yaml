@@ -99,6 +99,9 @@ db:
   enableLegacy: true
   # If both enabled, Legacy takes precedence and resources will access the legacy db.
 
+  waitHook:
+    image: postgres:15-alpine
+
   # LEGACY SETTINGS
   legacy:
     replicaCount: 1
